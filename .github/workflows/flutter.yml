@@ -1,0 +1,24 @@
+name: Flutter iOS Build
+on: [push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Build iOS
+        run: flutter build ios --no-codesign
+      - name: Create Payload
+        run: |
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r Payload.zip Payload
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Payload.zip
+          path: Payload.zip
